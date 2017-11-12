@@ -10,7 +10,7 @@ def _check_level(level, name="level"):
     and raises a ValueError exception else.
     """
     if level not in range(1, 5):
-        raise ValueError("The '{}' parameter must be between 1 and 5.".format(name))
+        raise ValueError("The {!r} parameter must be between 1 and 5.".format(name))
 
 class PCS(pw.Model):
     """A PCS, as stored in database.
@@ -112,7 +112,9 @@ class PCS(pw.Model):
         return self.__str__()
     
     def __str__(self):
-        return "<PCS '{}' (level {})>".format(self.code, self.level)
+        return "<PCS {code!r} (level {level})>".format(
+            code=self.code, level=self.level
+        )
 
 def get_all_PCS_of_level(level):
     """Gets all the PCS of a given level.
@@ -163,7 +165,7 @@ def get_PCS(level, code):
         return PCS.get(PCS.level==level, PCS.code==code)
     except PCS.DoesNotExist:
         raise ValueError(
-            "No PCS was found with code '{code}' at level '{level}'.".format(
+            "No PCS was found with code {code!r} at level {level!r}.".format(
                 code=code, level=level
             )
         )
