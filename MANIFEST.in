@@ -1,0 +1,3 @@
+recursive-include insee_pcs *.db
+include *.txt
+include *.md
