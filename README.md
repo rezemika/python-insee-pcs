@@ -15,7 +15,7 @@ Ce module est disponnible sur PyPi. Il nécessite le module `peewee` pour foncti
 
 # Usage
 
-```python3
+```python
 import insee_pcs
 
 # Trouver la PCS "1" du niveau 1.
@@ -29,11 +29,15 @@ insee_pcs.get_PCS(4, "382b").description
 
 Il est aussi possible d'itérer récursivement sur tous les enfants d'une PCS avec la méthode `iter_children()`. Cette méthode accepte un paramètre optionnel, `max_level`, permettant de définir un niveau maximum pour l'itération.
 
-```python3
+```python
 # Affiche récursivement la PCS "38" (niveau 2) et ses enfants.
 pcs = insee_pcs.get_PCS(2, "32")
 for p in pcs.iter_children():
-    print("{spaces}{code} : {description}...".format(spaces=' '*(p.level-2)*2, code=p.code, description=p.description[:20]))
+    print("{spaces}{code} : {description}...".format(
+        spaces=' '*(p.level-2)*2,
+        code=p.code,
+        description=p.description[:20]
+    ))
 """
 32 : Cadres de la fonctio...
   33 : Cadres de la fonctio...
@@ -75,7 +79,11 @@ for p in pcs.iter_children():
 # Même chose, en limitant l'itération au niveau 3.
 pcs = get_PCS(1, "3")
 for p in pcs.iter_children(max_level=3):
-    print("{spaces}{code} : {description}...".format(spaces=' '*(p.level-1)*2, code=p.code, description=p.description[:20]))
+    print("{spaces}{code} : {description}...".format(
+        spaces=' '*(p.level-1)*2,
+        code=p.code,
+        description=p.description[:20]
+    ))
 """
 3 : Cadres et profession...
   31 : Professions libérale...
@@ -92,7 +100,7 @@ for p in pcs.iter_children(max_level=3):
 
 La fonction `get_all_PCS_of_level()` prend un niveau (`int`) en paramètre et retourne toutes les PCS du niveau demandé dans un objet `SelectQuery` (convertible en liste).
 
-```python3
+```python
 # Trouver toutes les PCS de niveau 1. Retourne un objet `SelectQuery`.
 print(list(get_all_PCS_of_level(1)))
 [<PCS '1' (level 1)>, <PCS '2' (level 1)>, <PCS '3' (level 1)>, <PCS '4' (level 1)>, <PCS '5' (level 1)>, <PCS '6' (level 1)>, <PCS '7' (level 1)>, <PCS '8' (level 1)>]
@@ -100,9 +108,11 @@ print(list(get_all_PCS_of_level(1)))
 
 L'objet `PCS` est un modèle Peewee classique, vous pouvez donc utiliser toutes les méthodes de Peewee dessus.
 
-```python3
+```python
 # Trouver toutes les PCS de niveau 4 dont la description contient "Éleveur".
-print(list(PCS.select().where(PCS.level==4, PCS.description.contains("Éleveur"))))
+print(list(
+    PCS.select().where(PCS.level==4, PCS.description.contains("Éleveur"))
+))
 [<PCS '111d' (level 4)>, <PCS '111e' (level 4)>, <PCS '121d' (level 4)>, <PCS '121e' (level 4)>, <PCS '131d' (level 4)>, <PCS '131e' (level 4)>]
 ```
 
