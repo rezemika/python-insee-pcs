@@ -5,7 +5,7 @@ INSEE PCS : Des outils pour utiliser les Professions et Catégories Socioprofess
 
 Plus d'informations sur les PCS peuvent être trouvées sur le site de l'INSEE : [Nomenclatures des professions et catégories socioprofessionnelles](https://insee.fr/fr/information/2406153).
 
-**Ce code est testé uniquement avec Python 3. Les versions de la PCS antérieures à 2003 ne sont pas supportées.**
+**Ce code est testé uniquement avec Python 3. Les versions de la PCS antérieures à 2003 ne sont pas supportées pour l'instant. Enfin, l'auteur de ce script n'est en aucune façon relié à l'INSEE, la base de données mise à disposition par ce script a été créée à partir des fichiers CSV fournis sous licence libre sur le site de l'INSEE.**
 
 # Installation
 
