@@ -29,9 +29,9 @@ class PCS(pw.Model):
     level : int
         The classification level, between 1 and 4 inclusive.
     parent : ForeignKey to another PCS, or None.
-        The parent PCS. For example, "382b" (level 4)
-        has "38" (level 3) as parent. "3" (level 1) has no parent.
-        The inverse relationship uses the attribute "children".
+        The parent PCS. For example, "382b" (level 4) has "38" (level 3)
+        as parent. "3" (level 1) has no parent. The inverse relationship
+        uses the attribute "children".
     """
     
     code = pw.CharField(index=True)
