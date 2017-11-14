@@ -4,7 +4,36 @@ They aren't useful (and even dangerous) for the final user. Don't use them
 if you don't know what you are doing.
 """
 
-from main import PCS, get_PCS
+from main import db, PCS, get_PCS
+from playhouse import migrate
+import peewee as pw
+
+'''
+def _add_year():
+    migrator = migrate.SqliteMigrator(db)
+    year_field = pw.IntegerField(index=True, null=True)
+    migrate.migrate(
+        migrator.add_column("PCS", "year", year_field),
+    )
+    PCS.update(year=2003).execute()
+    migrator = migrate.SqliteMigrator(db)
+    migrate.migrate(
+        migrator.add_not_null("PCS", "year"),
+    )
+'''
+
+def _add_year():
+    """Adds the "year" field to the DB, 2003 default."""
+    migrator = migrate.SqliteMigrator(db)
+    year_field = pw.CharField(index=True, null=True)
+    migrate.migrate(
+        migrator.add_column("PCS", "year", year_field),
+    )
+    PCS.update(year='2003').execute()
+    migrator = migrate.SqliteMigrator(db)
+    migrate.migrate(
+        migrator.add_not_null("PCS", "year"),
+    )
 
 def _init_db():
     """Initializes a new database.
@@ -68,3 +97,5 @@ def _clean_content():
             pcs.save()
             print("PCS {} cleaned!".format(pcs.id))
     print("Done!")
+
+_add_year()

@@ -16,7 +16,9 @@ class PCS(pw.Model):
     """A PCS, as stored in database.
     
     This object is a Peewee model, so you can use all the Peewee's
-    methods on it, like `select()`, `where()`, etc.
+    methods on it, like `select()`, `where()`, etc. However, it is
+    strongly recommended to NOT modify this DB (e.g. with the `save()`
+    or `update()` methods).
     
     Attributes
     ----------
@@ -38,6 +40,7 @@ class PCS(pw.Model):
     description = pw.CharField()
     level = pw.IntegerField(index=True)
     parent = pw.ForeignKeyField("self", null=True, related_name="children")
+    year = pw.CharField(index=True)
     
     class Meta:
         database = db
@@ -51,11 +54,16 @@ class PCS(pw.Model):
             The URL, beginning with "https://".
         """
         base_url = {
-            1: "https://insee.fr/fr/metadonnees/pcs2003/categorieSocioprofessionnelleAgregee/{}",
-            2: "https://insee.fr/fr/metadonnees/pcs2003/categorieSocioprofessionnelle/{}",
-            3: "https://insee.fr/fr/metadonnees/pcs2003/categorieSocioprofessionnelleDetaillee/{}",
-            4: "https://insee.fr/fr/metadonnees/pcs2003/professionRegroupee/{}",
-        }.get(self.level)
+            "2003": {
+                1: "https://insee.fr/fr/metadonnees/pcs2003/categorieSocioprofessionnelleAgregee/{}",
+                2: "https://insee.fr/fr/metadonnees/pcs2003/categorieSocioprofessionnelle/{}",
+                3: "https://insee.fr/fr/metadonnees/pcs2003/categorieSocioprofessionnelleDetaillee/{}",
+                4: "https://insee.fr/fr/metadonnees/pcs2003/professionRegroupee/{}",
+            },
+        }.get(self.year)
+        if not base_url:
+            return ''
+        base_url = base_url.get(self.level)
         return base_url.format(self.code)
     
     def iter_children(self, max_level=4):
