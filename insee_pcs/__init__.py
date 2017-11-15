@@ -23,7 +23,7 @@ import sys as _sys
 import os as _os
 _sys.path.append(_os.path.dirname(_os.path.abspath(__file__)))
 
-from main import PCS, get_PCS, get_all_PCS_of_level
+from main import PCS
 
 __version__ = "0.1.0"
 __appname__ = "insee-pcs"

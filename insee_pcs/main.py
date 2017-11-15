@@ -4,6 +4,8 @@ import os as _os
 db_path = _os.path.dirname(_os.path.abspath(__file__)) + "/PCS.db"
 db = pw.SqliteDatabase(db_path)
 
+AVAILABLE_YEARS = ("2003", )
+
 def _check_level(level, name="level"):
     """
     Checks "level" is an integer between 1 and 4 inclusive,
@@ -117,8 +119,36 @@ class PCS(pw.Model):
         return parents
     
     @staticmethod
-    def get_PCS(level, code):
-                """Gets a PCS from its level and its code.
+    def get_year(year):
+        """Gets all the PCS of a year.
+        
+        Parameters
+        ----------
+        str / int
+            The desired year. See the `AVAILABLE_YEARS` to get a tuple
+            of the available years. An integer (corresponding to
+            an available year) is also accepted.
+        
+        Returns
+        -------
+        peewee.SelectQuery
+            The PCS of the desired year, ready for filtering with peewee.
+            Convertible into a list or a tuple.
+        
+        Raises
+        ------
+        ValueError
+            When the requested year is not available.
+        """
+        if type(year) is int:
+            year = str(year)
+        if year not in AVAILABLE_YEARS:
+            raise ValueError("The year {year!r} is not available.".format(year=year))
+        return PCS.select().where(PCS.year==year)
+    
+    @staticmethod
+    def get_PCS(level, code, year="2003"):
+        """Gets a PCS from its level and its code.
         
         Parameters
         ----------
@@ -126,6 +156,8 @@ class PCS(pw.Model):
             The level of classification.
         code : str
             The code of the PCS (for example: "382b").
+        year : str, optional
+            The year for which to get the PCS. "2003" default.
         
         Returns
         -------
@@ -138,8 +170,9 @@ class PCS(pw.Model):
             If not PCS was found for the given level and code.
         """
         _check_level(level)
+        y = PCS.get_year(year)
         try:
-            return PCS.get(PCS.level==level, PCS.code==code)
+            return y.where(PCS.level==level, PCS.code==code).get()
         except PCS.DoesNotExist:
             raise ValueError(
                 "No PCS was found with code {code!r} at level {level!r}.".format(
@@ -148,8 +181,8 @@ class PCS(pw.Model):
             )
     
     @staticmethod
-    def get_all_PCS_of_level(level):
-                """Gets all the PCS of a given level.
+    def get_all_PCS_of_level(level, year="2003"):
+        """Gets all the PCS of a given level.
         
         It's just an "alias" for "PCS.select().where(PCS.level==level)".
         
@@ -157,6 +190,8 @@ class PCS(pw.Model):
         ----------
         level : int
             The desired level.
+        year : str, optional
+            The year for which to get the PCS. "2003" default.
         
         Returns
         -------
@@ -170,7 +205,8 @@ class PCS(pw.Model):
             If "level" is not between 1 and 4 inclusive.
         """
         _check_level(level)
-        return PCS.select().where(PCS.level==level)
+        y = PCS.get_year(year)
+        return y.where(PCS.level==level)
     
     def __repr__(self):
         return self.__str__()
