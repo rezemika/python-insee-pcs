@@ -116,66 +116,68 @@ class PCS(pw.Model):
             parents.append(p)
         return parents
     
+    @staticmethod
+    def get_PCS(level, code):
+                """Gets a PCS from its level and its code.
+        
+        Parameters
+        ----------
+        level : int
+            The level of classification.
+        code : str
+            The code of the PCS (for example: "382b").
+        
+        Returns
+        -------
+        PCS : The requested PCS.
+        
+        Raises
+        ------
+        ValueError
+            If "level" is not between 1 and 4 inclusive.
+            If not PCS was found for the given level and code.
+        """
+        _check_level(level)
+        try:
+            return PCS.get(PCS.level==level, PCS.code==code)
+        except PCS.DoesNotExist:
+            raise ValueError(
+                "No PCS was found with code {code!r} at level {level!r}.".format(
+                    code=code, level=level
+                )
+            )
+    
+    @staticmethod
+    def get_all_PCS_of_level(level):
+                """Gets all the PCS of a given level.
+        
+        It's just an "alias" for "PCS.select().where(PCS.level==level)".
+        
+        Parameters
+        ----------
+        level : int
+            The desired level.
+        
+        Returns
+        -------
+        peewee.SelectQuery
+            The PCS of the desired level, ready for filtering with peewee.
+            Convertible into a list or a tuple.
+        
+        Raises
+        ------
+        ValueError
+            If "level" is not between 1 and 4 inclusive.
+        """
+        _check_level(level)
+        return PCS.select().where(PCS.level==level)
+    
     def __repr__(self):
         return self.__str__()
     
     def __str__(self):
         return "<PCS {code!r} (level {level})>".format(
             code=self.code, level=self.level
-        )
-
-def get_all_PCS_of_level(level):
-    """Gets all the PCS of a given level.
-    
-    It's just an "alias" for "PCS.select().where(PCS.level==level)".
-    
-    Parameters
-    ----------
-    level : int
-        The desired level.
-    
-    Returns
-    -------
-    peewee.SelectQuery
-        The PCS of the desired level, ready for filtering with peewee.
-        Convertible into a list or a tuple.
-    
-    Raises
-    ------
-    ValueError
-        If "level" is not between 1 and 4 inclusive.
-    """
-    _check_level(level)
-    return PCS.select().where(PCS.level==level)
-
-def get_PCS(level, code):
-    """Gets a PCS from its level and its code.
-    
-    Parameters
-    ----------
-    level : int
-        The level of classification.
-    code : str
-        The code of the PCS (for example: "382b").
-    
-    Returns
-    -------
-    PCS : The requested PCS.
-    
-    Raises
-    ------
-    ValueError
-        If "level" is not between 1 and 4 inclusive.
-        If not PCS was found for the given level and code.
-    """
-    _check_level(level)
-    try:
-        return PCS.get(PCS.level==level, PCS.code==code)
-    except PCS.DoesNotExist:
-        raise ValueError(
-            "No PCS was found with code {code!r} at level {level!r}.".format(
-                code=code, level=level
-            )
         )
 
 db.connect()
