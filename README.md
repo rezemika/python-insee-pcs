@@ -5,7 +5,12 @@ INSEE PCS : Des outils pour utiliser les Professions et Catégories Socioprofess
 
 Plus d'informations sur les PCS peuvent être trouvées sur le site de l'INSEE : [Nomenclatures des professions et catégories socioprofessionnelles](https://insee.fr/fr/information/2406153).
 
-**Ce code est testé uniquement avec Python 3. Les versions de la PCS antérieures à 2003 ne sont pas supportées pour l'instant. Enfin, l'auteur de ce script n'est en aucune façon relié à l'INSEE, la base de données mise à disposition par ce script a été créée à partir des fichiers CSV fournis sous licence libre sur le site de l'INSEE.**
+**Ce code est testé uniquement avec Python 3. L'auteur de ce script n'est en aucune façon relié à l'INSEE, la base de données mise à disposition par ce script a été créée à partir des fichiers CSV fournis sous licence libre sur le site de l'INSEE.**
+
+Voici les différentes nomenclatures actuellement supportées :
+
+- `2003` ;
+- `2017-ESE`.
 
 # Installation
 
@@ -18,12 +23,15 @@ Ce module est disponnible sur PyPi. Il nécessite le module `peewee` pour foncti
 ```python
 import insee_pcs
 
+# Récupérer les PCS de la nomenclature de 2003
+ypcs = insee_pcs.get_year("2003")
+
 # Trouver la PCS "1" du niveau 1.
-insee_pcs.get_PCS(1, "1")
+ypcs.get_PCS(1, "1")
 "<PCS '1' (level 1)>"
 
 # Trouver la description de la PCS "382b" du niveau 4.
-insee_pcs.get_PCS(4, "382b").description
+ypcs.get_PCS(4, "382b").description
 "Architectes salariés"
 ```
 
@@ -31,7 +39,7 @@ Il est aussi possible d'itérer récursivement sur tous les enfants d'une PCS av
 
 ```python
 # Affiche récursivement la PCS "38" (niveau 2) et ses enfants.
-pcs = insee_pcs.get_PCS(2, "32")
+pcs = ypcs.get_PCS(2, "32")
 for p in pcs.iter_children():
     print("{spaces}{code} : {description}...".format(
         spaces=' '*(p.level-2)*2,
@@ -77,7 +85,7 @@ for p in pcs.iter_children():
 """
 
 # Même chose, en limitant l'itération au niveau 3.
-pcs = get_PCS(1, "3")
+pcs = ypcs.get_PCS(1, "3")
 for p in pcs.iter_children(max_level=3):
     print("{spaces}{code} : {description}...".format(
         spaces=' '*(p.level-1)*2,
@@ -102,16 +110,30 @@ La fonction `get_all_PCS_of_level()` prend un niveau (`int`) en paramètre et re
 
 ```python
 # Trouver toutes les PCS de niveau 1. Retourne un objet `SelectQuery`.
-print(list(get_all_PCS_of_level(1)))
+print(list(ypcs.get_all_PCS_of_level(1)))
 [<PCS '1' (level 1)>, <PCS '2' (level 1)>, <PCS '3' (level 1)>, <PCS '4' (level 1)>, <PCS '5' (level 1)>, <PCS '6' (level 1)>, <PCS '7' (level 1)>, <PCS '8' (level 1)>]
+```
+
+Les méthodes `get_PCS()` et `get_all_PCS_of_level()` acceptent toutes deux un paramètre `year` (`str`) pour spécifier une nomenclature sans passer par la méthode `get_year()`.
+
+```python
+insee_pcs.PCS.get_PCS(1, '1', year="2003")
+"<PCS '1' (level 1)>"
+```
+
+La liste des nomenclatures disponnibles est accessible via l'attribut `AVAILABLE_YEARS`, qui contient un tuple de strings.
+
+```python
+insee_pcs.AVAILABLE_YEARS
+("2003", "2017-ESE")
 ```
 
 L'objet `PCS` est un modèle Peewee classique, vous pouvez donc utiliser toutes les méthodes de Peewee dessus.
 
 ```python
-# Trouver toutes les PCS de niveau 4 dont la description contient "Éleveur".
+# Trouver toutes les PCS 2003 de niveau 4 dont la description contient "Éleveur".
 print(list(
-    PCS.select().where(PCS.level==4, PCS.description.contains("Éleveur"))
+    PCS.select().where(PCS.year="2003", PCS.level==4, PCS.description.contains("Éleveur"))
 ))
 [<PCS '111d' (level 4)>, <PCS '111e' (level 4)>, <PCS '121d' (level 4)>, <PCS '121e' (level 4)>, <PCS '131d' (level 4)>, <PCS '131e' (level 4)>]
 ```
@@ -125,7 +147,7 @@ Ce module nécessite `peewee` (disponnible avec `pip`).
 # TODO
 
 - Traduction ?
-- Anciennes versions des PCS / CSP ?
+- Anciennes versions des PCS / CSP ? **[WIP]**
 
 # Licence
 
