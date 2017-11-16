@@ -4,7 +4,7 @@ import os as _os
 db_path = _os.path.dirname(_os.path.abspath(__file__)) + "/PCS.db"
 db = pw.SqliteDatabase(db_path)
 
-AVAILABLE_YEARS = ("2003", )
+AVAILABLE_YEARS = ("2003", "2017-ESE")
 
 def _check_level(level, name="level"):
     """
